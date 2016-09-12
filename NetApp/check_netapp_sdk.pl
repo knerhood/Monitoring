@@ -33,7 +33,6 @@
 use strict;
 use warnings;
 
-
 use lib "/usr/local/share/perl/5.14.2/NetApp";         # this has to be adjusted!
 use Nagios::Plugin;                                    # Nagios helper functions
 use NaServer;                                          # class for managing NetApp storage systems using ONTAPI(tm) APIs.
@@ -214,8 +213,8 @@ sub check_volume {
     # calc pct
     my $vol_size_pct = ( $vol_size_total > 0 && $vol_size_used > 0 ) ? sprintf("%.2f", ($vol_size_used/$vol_size_total)*100) : 0;
     # convert to highest available uom
-    $vol_size_total = ($vol_size_total/1024) . " B";
-    $vol_size_used  = ($vol_size_used/1024) . " B";
+    $vol_size_total = ($vol_size_total/1024) . " KB";
+    $vol_size_used  = ($vol_size_used/1024) . " KB";
     
     # split uom and size for perfdata
     my @vol_size_used = split(' ', $vol_size_used);
