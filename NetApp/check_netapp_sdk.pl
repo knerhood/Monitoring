@@ -65,6 +65,7 @@ my %command_table = (
   'check-volume'     => \&check_volume,
   'get-netapp-info'  => \&get_netapp_info,
   'check-version'    => \&get_netapp_info,
+  'check-license'    => \&check_license,
 );
 
 my %netapp;
