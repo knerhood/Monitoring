@@ -17,6 +17,8 @@
 #      - Performance data
 #
 # Changelog:
+#      2016-09-12: Ken Nerhood (https://github.com/knerhood):
+#        - fixed UoM for volumes and adjusted Perf Data output
 #      2016-07-27: Oliver Skibbe
 #        - fixed: license info
 #      2014-10-29: Oliver Skibbe (https://github.com/riskersen):
@@ -230,6 +232,9 @@ sub check_volume {
         value => $vol_size_used[0],
         uom => $vol_size_used[1],
         threshold => $np->threshold,
+        min => 0,
+	max => $vol_size_total[0],
+
       );
       $np->add_perfdata( 
         label => $vol_name . "_size_total",
@@ -238,16 +243,20 @@ sub check_volume {
         threshold => $np->threshold,
       );
       
-      # perfdata: pct
       $np->set_thresholds(critical => $crit, warning => $warn);
-      $np->add_perfdata( 
-        label => $vol_name . "_size_pct",
-        value => $vol_size_pct,
-        uom => "%",
-        threshold => $np->threshold,
-      );
+      # perfdata: pct
+      #$np->add_perfdata( 
+      #  label => $vol_name . "_size_pct",
+      #  value => $vol_size_pct,
+      #  uom => "%",
+      #  threshold => $np->threshold,
+      #);
     }
-    
+
+
+    my $vol_free = $vol_size_total[0] - $vol_size_used[0];
+    $exit_hash{exit_msg} .= "/vol/" . $vol_name . "/ - total: " . sprintf("%.1f", $vol_size_total[0]/1024/1024) . " GB - used " . sprintf("%.1f", $vol_size_used[0]/1024/1024) . " GB (" . sprintf("%.1f", $vol_size_pct) ."%) - free: " . sprintf("%.1f", $vol_free/1024/1024) . " GB";
+
     # prepare exit code & check against threshold
     my $code = $np->check_threshold(check => $vol_size_pct);
     
@@ -267,9 +276,6 @@ sub check_volume {
     }
   }
   
-  # nicer output, adds a ": " if suspicious volumes are found
-  my $exit_msg_part = $counter > 0 ? ":" : "";
-  $exit_hash{exit_msg} = $counter . " suspicious volumes found" . $exit_msg_part . " " . $exit_hash{exit_msg};
   return (%exit_hash);
 }
 
