@@ -792,7 +792,7 @@ sub check_snapmirror {
     my $snap_last_xfer_type = $snap->child_get_string("last-transfer-type") ? $snap->child_get_string("last-transfer-type") : "-";
     
     # returns kB
-    my $snap_last_xfer_size = $snap->child_get_string("last-transfer-size") ? ($snap->child_get_string("last-transfer-size")/1024) . " B" : 0;
+    my $snap_last_xfer_size = $snap->child_get_string("last-transfer-size") ? ($snap->child_get_string("last-transfer-size")) . " KB" : 0;
     
     # returns seconds
     my $snap_last_xfer_dur = $snap->child_get_string("last-transfer-duration") ? $snap->child_get_string("last-transfer-duration") : 0;
