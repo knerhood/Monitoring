@@ -808,16 +808,16 @@ sub check_snapmirror {
     # disable perfdata with -p
     if ( ! $no_perfdata ) {
       # perfdata: actual size
-      $np->add_perfdata( 
-        label     => $snap_perf_name . "_xfer_size",
-        value     => $snap_xfer_size[0],
-        uom     => $snap_xfer_size[1],
-      );
-      $np->add_perfdata( 
+      $np->add_perfdata(
         label    => $snap_perf_name . "_lag_time",
         value     => $snap_lag_time,
         uom     => "s",
         threshold   => $np->threshold,
+      );
+      $np->add_perfdata( 
+        label     => $snap_perf_name . "_xfer_size",
+        value     => $snap_xfer_size[0],
+        uom     => $snap_xfer_size[1],
       );
     }
     
