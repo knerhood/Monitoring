@@ -594,7 +594,8 @@ sub check_aggr {
     # fetch results
     my $aggr_name = $aggr->child_get_string("name");
     my $aggr_size_total = $aggr->child_get_int("size-total"); 
-    my $aggr_size_used = $aggr->child_get_int("size-used") * 0.97;    # dont forget 3% wafl reserve
+#    my $aggr_size_used = $aggr->child_get_int("size-used") * 0.97;    # dont forget 3% wafl reserve
+    my $aggr_size_used = $aggr->child_get_int("size-used");
     my $aggr_state = $aggr->child_get_string("state");
     my $aggr_mount_state = $aggr->child_get_string("mount-state");    # possible values: unmounted, online, frozen, destroying, creating, mounting, unmounting, 
                                       # consistent, inconsistent, reverted, quiescing, quiesced, iron restricted
@@ -628,15 +629,15 @@ sub check_aggr {
     
     # should return only 1 snap
     foreach my $snap (@snapshot_space_info) {
-      $aggr_size_total += $snap->child_get_int("snapshot-size-used");
+#      $aggr_size_total += $snap->child_get_int("snapshot-size-used");
     }
     
     # calc pct
     my $aggr_size_pct = ( $aggr_size_total > 0 && $aggr_size_used > 0 ) ? sprintf("%.2f", ($aggr_size_used/$aggr_size_total)*100) : 0;
     
     # convert to highest available uom
-    $aggr_size_total = ($aggr_size_total/1024) . " B";
-    $aggr_size_used  = ($aggr_size_used/1024) . " B";
+    $aggr_size_total = ($aggr_size_total/1024) . " KB";
+    $aggr_size_used  = ($aggr_size_used/1024) . " KB";
     
     if ( ! $no_perfdata ) {
       # split uom and size for perfdata
