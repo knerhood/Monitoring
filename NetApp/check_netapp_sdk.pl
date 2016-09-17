@@ -634,6 +634,11 @@ sub check_aggr {
     
     # calc pct
     my $aggr_size_pct = ( $aggr_size_total > 0 && $aggr_size_used > 0 ) ? sprintf("%.2f", ($aggr_size_used/$aggr_size_total)*100) : 0;
+
+    # calc free space
+    my $aggr_free = $aggr_size_total - $aggr_size_used;
+
+    $exit_hash{exit_msg} .= $aggr_name . "/ - total: " . sprintf("%.1f", $aggr_size_total/1024/1024/1024/1024) . " TB - used " . sprintf("%.1f", $aggr_size_used/1024/1024/1024/1024) . " TB (" . sprintf("%.1f", $aggr_size_pct) ."%) - free: " . sprintf("%.1f", $aggr_free/1024/1024/1024/1024) . " TB";
     
     # convert to highest available uom
     $aggr_size_total = ($aggr_size_total/1024) . " KB";
@@ -648,12 +653,12 @@ sub check_aggr {
       
       # perfdata: actual size
       $np->set_thresholds(critical => $crit_size, warning => $warn_size);
-      $np->add_perfdata( label => $aggr_name . "_size_used", value => $aggr_size_used[0],uom => $aggr_size_used[1], threshold => $np->threshold);
+      $np->add_perfdata( label => $aggr_name . "_size_used", value => $aggr_size_used[0],uom => $aggr_size_used[1], min => 0, max => $aggr_size_total[0], threshold => $np->threshold);
       $np->add_perfdata( label => $aggr_name . "_size_total", value => $aggr_size_total[0], uom => $aggr_size_total[1]);
       
       # perfdata: pct
       $np->set_thresholds(critical => $crit, warning => $warn);
-      $np->add_perfdata( label => $aggr_name . "_size_pct", value => $aggr_size_pct, uom => "%", threshold => $np->threshold);
+#      $np->add_perfdata( label => $aggr_name . "_size_pct", value => $aggr_size_pct, uom => "%", threshold => $np->threshold);
     }
     
     # prepare exit code & check against threshold
@@ -670,13 +675,13 @@ sub check_aggr {
     if (  $agrr_size_code == CRITICAL || $inconsistent_code == CRITICAL || $raid_code == CRITICAL ||
         $mirror_state_code == CRITICAL || $mount_state_code == CRITICAL ) {
       # we catched a critical return value
-      $exit_hash{exit_msg} .= "C->" . $aggr_name . ": " . $aggr_size_pct . "% ";
+      #$exit_hash{exit_msg} .= "C->" . $aggr_name . ": " . $aggr_size_pct . "% ";
       $exit_hash{exit_state} = CRITICAL;
       $counter++;
     } elsif (   $agrr_size_code == WARNING || $inconsistent_code == WARNING || $raid_code == WARNING || 
           $mirror_state_code == WARNING || $mount_state_code == WARNING ) {
       # if warning is catched, but critical is already set, add warning msg and warning code
-      $exit_hash{exit_msg} .= "W->" . $aggr_name . ": " . $aggr_size_pct . "% ";
+      #$exit_hash{exit_msg} .= "W->" . $aggr_name . ": " . $aggr_size_pct . "% ";
       $exit_hash{exit_state} = WARNING if ( $exit_hash{exit_state} == OK );
       $counter++;
     }
@@ -686,8 +691,8 @@ sub check_aggr {
   }
   
   # nicer output, adds a ": " if suspicious aggrs are found
-  my $exit_msg_part = $counter > 0 ? ":" : "";
-  $exit_hash{exit_msg} = $counter . " suspicious aggregate found" . $exit_msg_part . " " . $exit_hash{exit_msg};
+  #my $exit_msg_part = $counter > 0 ? ":" : "";
+  #$exit_hash{exit_msg} = $counter . " suspicious aggregate found" . $exit_msg_part . " " . $exit_hash{exit_msg};
   return (%exit_hash);
 }
 
